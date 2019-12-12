@@ -1,32 +1,24 @@
-# vim ft=yaml
-# travis-ci.org definition for python-patterns build
+dist: xenial
 language: python
 
 sudo: false
 
-python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-# Disabled for now since cause more pain than gain
-#  - "pypy"
-#  - "pypy3"
+matrix:
+  include:
+    - python: "3.7"
+      env: TOXENV=ci37
+    - python: "3.8"
+      env: TOXENV=ci38
 
 cache:
   - pip
 
 install:
-  - travis_retry pip install -q coveralls codecov six
-  - pip install flake8  # eventually worth
+  - pip install tox
+  - pip install codecov
 
 script:
-  # Run tests
-  - PYTHONPATH=. nosetests -s -v --with-doctest --with-cov --cover-package . --logging-level=INFO -v .
-  # Actually run all the scripts, contributing to coverage
-  - PYTHONPATH=. ./run_all.sh
-  - flake8 *py
+  - tox
 
 after_success:
-  - coveralls
   - codecov
